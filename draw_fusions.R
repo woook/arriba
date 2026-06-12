@@ -939,7 +939,7 @@ for (fusion in 1:nrow(fusions)) {
 			paste0(fusions[fusion,"gene1"], "-", fusions[fusion,"gene2"]), perl=T)
 		fusionFile <- sub("\\.pdf$", paste0("_", fusion, "_", fusionLabel, ".pdf"),
 			outputFile, ignore.case=T, perl=T)
-		pdf(fusionFile, onefile=F, width=pdfWidth, height=pdfHeight,
+		pdf(fusionFile, onefile=T, width=pdfWidth, height=pdfHeight,
 			title=ifelse(sampleName != "", sampleName, fusionsFile))
 		par(family=fontFamily)
 	}
