@@ -201,6 +201,10 @@ if (colnames(fusions)[1] == "X.gene1") { # Arriba output
 	stop("Unrecognized fusion file format")
 }
 
+if (splitOutput)
+	if (sub("\\.pdf$", "_test.pdf", outputFile, ignore.case=T, perl=T) == outputFile)
+		stop("--output must have a .pdf extension when --splitOutput=TRUE")
+
 if (!splitOutput) {
 	pdf(outputFile, onefile=T, width=pdfWidth, height=pdfHeight, title=ifelse(sampleName != "", sampleName, fusionsFile))
 	par(family=fontFamily)
@@ -212,9 +216,7 @@ if (nrow(fusions) == 0) {
 		text(0, 0, "empty input file")
 		warning("empty input file")
 		dev.off()
-	} else {
-		warning("empty input file")
-	}
+	} else warning("empty input file")
 	quit("no")
 }
 
@@ -927,11 +929,6 @@ findClosestGene <- function(exons, contig, breakpoint, extraConditions) {
 	}
 }
 
-if (splitOutput) {
-	if (sub("\\.pdf$", "_test.pdf", outputFile, ignore.case=T, perl=T) == outputFile)
-		stop("--output must have a .pdf extension when --splitOutput=TRUE")
-}
-
 # main loop starts here
 for (fusion in 1:nrow(fusions)) {
 
@@ -1438,7 +1435,5 @@ for (fusion in 1:nrow(fusions)) {
 
 }
 
-if (!splitOutput) {
-	devNull <- dev.off()
-}
+if (!splitOutput) devNull <- dev.off()
 message("Done")
