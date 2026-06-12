@@ -937,6 +937,8 @@ for (fusion in 1:nrow(fusions)) {
 			paste0(fusions[fusion,"gene1"], "-", fusions[fusion,"gene2"]))
 		fusionFile <- sub("\\.pdf$", paste0("_", fusion, "_", fusionLabel, ".pdf"),
 			outputFile, ignore.case=TRUE)
+		if (fusionFile == outputFile)
+			stop("--output must have a .pdf extension when --splitOutput=TRUE")
 		pdf(fusionFile, onefile=FALSE, width=pdfWidth, height=pdfHeight,
 			title=ifelse(sampleName != "", sampleName, fusionsFile))
 		par(family=fontFamily)
@@ -1011,7 +1013,7 @@ for (fusion in 1:nrow(fusions)) {
 		plot(0, 0, type="l", xaxt="n", yaxt="n", xlab="", ylab="")
 		text(0, 0, paste0("exon coordinates of ", fusions[fusion,"gene1"], " not found in\n", exonsFile))
 		warning(paste("exon coordinates of", fusions[fusion,"gene1"], "not found"))
-		if (splitOutput) { dev.off() }
+		if (splitOutput) dev.off()
 		next
 	}
 	exons2 <- findExons(exons, fusions[fusion,"contig2"], fusions[fusion,"gene_id2"], fusions[fusion,"direction2"], fusions[fusion,"breakpoint2"], coverage2, fusions[fusion,"transcript_id2"], transcriptSelection)
@@ -1020,7 +1022,7 @@ for (fusion in 1:nrow(fusions)) {
 		plot(0, 0, type="l", xaxt="n", yaxt="n", xlab="", ylab="")
 		text(0, 0, paste0("exon coordinates of ", fusions[fusion,"gene2"], " not found in\n", exonsFile))
 		warning(paste("exon coordinates of", fusions[fusion,"gene2"], "not found"))
-		if (splitOutput) { dev.off() }
+		if (splitOutput) dev.off()
 		next
 	}
 
@@ -1429,7 +1431,7 @@ for (fusion in 1:nrow(fusions)) {
 		}
 	}
 
-	if (splitOutput) { dev.off() }
+	if (splitOutput) dev.off()
 
 }
 
