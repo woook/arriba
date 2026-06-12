@@ -940,7 +940,6 @@ for (fusion in 1:nrow(fusions)) {
 		pdf(fusionFile, onefile=FALSE, width=pdfWidth, height=pdfHeight,
 			title=ifelse(sampleName != "", sampleName, fusionsFile))
 		par(family=fontFamily)
-		on.exit(dev.off(), add=FALSE)
 	}
 
 	# if showIntergenicVicinity is a number, take it as is
@@ -1012,6 +1011,7 @@ for (fusion in 1:nrow(fusions)) {
 		plot(0, 0, type="l", xaxt="n", yaxt="n", xlab="", ylab="")
 		text(0, 0, paste0("exon coordinates of ", fusions[fusion,"gene1"], " not found in\n", exonsFile))
 		warning(paste("exon coordinates of", fusions[fusion,"gene1"], "not found"))
+		if (splitOutput) { dev.off() }
 		next
 	}
 	exons2 <- findExons(exons, fusions[fusion,"contig2"], fusions[fusion,"gene_id2"], fusions[fusion,"direction2"], fusions[fusion,"breakpoint2"], coverage2, fusions[fusion,"transcript_id2"], transcriptSelection)
@@ -1020,6 +1020,7 @@ for (fusion in 1:nrow(fusions)) {
 		plot(0, 0, type="l", xaxt="n", yaxt="n", xlab="", ylab="")
 		text(0, 0, paste0("exon coordinates of ", fusions[fusion,"gene2"], " not found in\n", exonsFile))
 		warning(paste("exon coordinates of", fusions[fusion,"gene2"], "not found"))
+		if (splitOutput) { dev.off() }
 		next
 	}
 
@@ -1428,8 +1429,11 @@ for (fusion in 1:nrow(fusions)) {
 		}
 	}
 
+	if (splitOutput) { dev.off() }
+
 }
 
-if (!splitOutput)
+if (!splitOutput) {
 	devNull <- dev.off()
+}
 message("Done")
