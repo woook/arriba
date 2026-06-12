@@ -28,7 +28,8 @@ parameters <- list(
 	showIntergenicVicinity=list("showIntergenicVicinity", "string", "0"),
 	transcriptSelection=list("transcriptSelection", "string", "provided"),
 	fixedScale=list("fixedScale", "numeric", 0),
-	coverageRange=list("coverageRange", "string", "0")
+	coverageRange=list("coverageRange", "string", "0"),
+	splitOutput=list("splitOutput", "bool", F)
 )
 
 # print help if necessary
@@ -200,14 +201,20 @@ if (colnames(fusions)[1] == "X.gene1") { # Arriba output
 	stop("Unrecognized fusion file format")
 }
 
-pdf(outputFile, onefile=T, width=pdfWidth, height=pdfHeight, title=ifelse(sampleName != "", sampleName, fusionsFile))
-par(family=fontFamily)
+if (!splitOutput) {
+	pdf(outputFile, onefile=T, width=pdfWidth, height=pdfHeight, title=ifelse(sampleName != "", sampleName, fusionsFile))
+	par(family=fontFamily)
+}
 
 if (nrow(fusions) == 0) {
-	plot(0, 0, type="l", xaxt="n", yaxt="n", xlab="", ylab="")
-	text(0, 0, "empty input file")
-	warning("empty input file")
-	dev.off()
+	if (!splitOutput) {
+		plot(0, 0, type="l", xaxt="n", yaxt="n", xlab="", ylab="")
+		text(0, 0, "empty input file")
+		warning("empty input file")
+		dev.off()
+	} else {
+		warning("empty input file")
+	}
 	quit("no")
 }
 
@@ -925,6 +932,17 @@ for (fusion in 1:nrow(fusions)) {
 
 	message(paste0("Drawing fusion #", fusion, ": ", fusions[fusion,"gene1"], ":", fusions[fusion,"gene2"]))
 
+	if (splitOutput) {
+		fusionLabel <- gsub("[^A-Za-z0-9._-]", "_",
+			paste0(fusions[fusion,"gene1"], "-", fusions[fusion,"gene2"]))
+		fusionFile <- sub("\\.pdf$", paste0("_", fusion, "_", fusionLabel, ".pdf"),
+			outputFile, ignore.case=TRUE)
+		pdf(fusionFile, onefile=FALSE, width=pdfWidth, height=pdfHeight,
+			title=ifelse(sampleName != "", sampleName, fusionsFile))
+		par(family=fontFamily)
+		on.exit(dev.off(), add=FALSE)
+	}
+
 	# if showIntergenicVicinity is a number, take it as is
 	# if it is a keyword (closestGene/closestProteinCodingGene), determine the range dynamically
 	showVicinity <- rep(0, 4)
@@ -1412,5 +1430,6 @@ for (fusion in 1:nrow(fusions)) {
 
 }
 
-devNull <- dev.off()
+if (!splitOutput)
+	devNull <- dev.off()
 message("Done")
