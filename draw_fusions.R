@@ -927,6 +927,11 @@ findClosestGene <- function(exons, contig, breakpoint, extraConditions) {
 	}
 }
 
+if (splitOutput) {
+	if (sub("\\.pdf$", "_test.pdf", outputFile, ignore.case=T, perl=T) == outputFile)
+		stop("--output must have a .pdf extension when --splitOutput=TRUE")
+}
+
 # main loop starts here
 for (fusion in 1:nrow(fusions)) {
 
@@ -934,12 +939,10 @@ for (fusion in 1:nrow(fusions)) {
 
 	if (splitOutput) {
 		fusionLabel <- gsub("[^A-Za-z0-9._-]", "_",
-			paste0(fusions[fusion,"gene1"], "-", fusions[fusion,"gene2"]))
+			paste0(fusions[fusion,"gene1"], "-", fusions[fusion,"gene2"]), perl=T)
 		fusionFile <- sub("\\.pdf$", paste0("_", fusion, "_", fusionLabel, ".pdf"),
-			outputFile, ignore.case=TRUE)
-		if (fusionFile == outputFile)
-			stop("--output must have a .pdf extension when --splitOutput=TRUE")
-		pdf(fusionFile, onefile=FALSE, width=pdfWidth, height=pdfHeight,
+			outputFile, ignore.case=T, perl=T)
+		pdf(fusionFile, onefile=F, width=pdfWidth, height=pdfHeight,
 			title=ifelse(sampleName != "", sampleName, fusionsFile))
 		par(family=fontFamily)
 	}
